@@ -1,0 +1,178 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ==========================================
+   CONFIGURACIÓN GLOBAL Y VARIABLES ARCOÍRIS
+   ========================================== */
+:root {
+  --bg-main: #060913;
+  --card-bg: rgba(15, 23, 42, 0.75);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-main);
+  /* Luces de neón ambiental animadas en el fondo */
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* ==========================================
+   ANIMACIÓN GRADIENTE ARCOÍRIS (RGB)
+   ========================================== */
+@keyframes rainbow-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.4)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 20px rgba(236, 72, 153, 0.7)); }
+}
+
+/* ==========================================
+   TARJETAS CON BORDE ARCOÍRIS / NEÓN
+   ========================================== */
+#tasks-container > div {
+  position: relative;
+  background: var(--card-bg) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: cardAppear 0.4s ease-out forwards;
+}
+
+/* Borde arcoíris resplandeciente al pasar el mouse o tocar */
+#tasks-container > div::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 1.35rem;
+  background: linear-gradient(90deg, #ff007f, #7928ca, #00dfd8, #ff007f);
+  background-size: 300% 300%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  animation: rainbow-shift 4s linear infinite;
+}
+
+#tasks-container > div:hover::before {
+  opacity: 1;
+}
+
+#tasks-container > div:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 14px 35px -5px rgba(121, 40, 202, 0.35);
+}
+
+#tasks-container > div:active {
+  transform: scale(0.97);
+}
+
+/* Animación de entrada para cada tarjeta nueva */
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================
+   ENCABEZADO Y BARRA DE PROGRESO CON NEÓN
+   ========================================== */
+header {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Botón "Nueva" con efecto Neón Vivo */
+#open-modal {
+  background: linear-gradient(135deg, #ff007f 0%, #7928ca 50%, #6366f1 100%) !important;
+  background-size: 200% 200%;
+  animation: rainbow-shift 5s ease infinite;
+  box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+}
+
+#open-modal:hover {
+  box-shadow: 0 0 25px rgba(121, 40, 202, 0.8);
+  transform: scale(1.05);
+}
+
+/* Barra de progreso con gradiente RGB animado */
+#progress-bar {
+  background: linear-gradient(90deg, #ff007f, #7928ca, #00dfd8, #10b981) !important;
+  background-size: 200% 200% !important;
+  animation: rainbow-shift 3s ease infinite !important;
+  box-shadow: 0 0 12px rgba(0, 223, 216, 0.6);
+}
+
+/* ==========================================
+   INPUTS Y MODAL CON RESPLANDOR
+   ========================================== */
+input, select, textarea {
+  background: rgba(10, 15, 30, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-primary) !important;
+  transition: all 0.25s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #00dfd8 !important;
+  box-shadow: 0 0 15px rgba(0, 223, 216, 0.4) !important;
+  outline: none;
+}
+
+#modal > div {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(121, 40, 202, 0.3);
+  animation: modalBounce 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes modalBounce {
+  from {
+    transform: translateY(100%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================
+   SCROLLBAR PERSONALIZADA
+   ========================================== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff007f, #7928ca);
+  border-radius: 20px;
+}

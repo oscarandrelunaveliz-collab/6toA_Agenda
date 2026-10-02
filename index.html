@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Icono de la pestaña (Favicon) -->
+  <!-- Especifica el tamaño estándar de favicons para que no se reduzca más de la cuenta -->
+<link rel="icon" type="image/png" sizes="32x32" href="Logo agenda-Photoroom.png">
+
+  <title>Tareas del Curso</title>
+  
+  <!-- Resto de tus scripts y CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+  <!-- SDK de Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-24">
+
+  <!-- Encabezado Principal -->
+  <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3.5">
+    <div class="max-w-md mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="p-2.5 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-2xl shadow-lg shadow-indigo-500/20">
+          <i data-lucide="graduation-cap" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight tracking-tight text-white">Agenda 6to A</h1>
+          <p class="text-xs text-slate-400 font-medium">Control colaborativo de tareas</p>
+        </div>
+      </div>
+      <button id="open-modal" class="bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-2xl shadow-lg shadow-indigo-600/30 transition-all flex items-center gap-1.5 text-xs font-semibold active:scale-95">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>Nueva</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="max-w-md mx-auto p-4 space-y-4">
+
+    <!-- Tarjeta de Progreso del Curso -->
+    <section class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-4 rounded-2xl border border-slate-800 shadow-xl space-y-2">
+      <div class="flex justify-between items-center text-xs">
+        <span class="text-slate-400 font-medium flex items-center gap-1.5">
+          <i data-lucide="trending-up" class="w-4 h-4 text-indigo-400"></i> Progreso del curso
+        </span>
+        <span id="progress-text" class="font-bold text-indigo-400">0% completado</span>
+      </div>
+      <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden border border-slate-800">
+        <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-2.5 rounded-full transition-all duration-500 w-0"></div>
+      </div>
+    </section>
+
+    <!-- Buscador de Tareas -->
+    <div class="relative">
+      <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+      <input type="text" id="search-input" placeholder="Buscar por materia o descripción..." class="w-full bg-slate-900/90 border border-slate-800 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500/80 transition-all">
+    </div>
+
+    <!-- Filtros de Estado -->
+    <div class="flex gap-2 p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
+      <button class="filter-btn active flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all bg-indigo-600 text-white shadow-md shadow-indigo-600/20" data-filter="todas">Todas</button>
+      <button class="filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all" data-filter="pendientes">Pendientes</button>
+      <button class="filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all" data-filter="listas">Listas</button>
+    </div>
+
+    <!-- Lista Contenedora de Tareas -->
+    <div id="tasks-container" class="space-y-3">
+      <!-- Carga dinámica mediante JS -->
+    </div>
+  </main>
+
+  <!-- Modal para Agregar Nueva Tarea -->
+  <div id="modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-all">
+    <div class="bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border border-slate-800 p-6 space-y-5 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="clipboard-list" class="w-5 h-5 text-indigo-400"></i>
+          <h3 class="font-bold text-base text-white">Publicar Nueva Tarea</h3>
+        </div>
+        <button id="close-modal" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-all">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="task-form" class="space-y-4">
+        <div>
+  <label class="block text-xs font-semibold text-slate-300 mb-1.5">Materia / Asignatura</label>
+  
+  <!-- Campo oculto para registrar la materia seleccionada -->
+  <input type="hidden" id="subject" required>
+
+  <!-- Botón Desplegable del Acordeón -->
+  <button type="button" id="accordion-toggle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-400 flex items-center justify-between transition-all">
+    <span id="selected-subject-label">Seleccionar una materia...</span>
+    <i data-lucide="chevron-down" id="accordion-icon" class="w-4 h-4 transition-transform duration-200"></i>
+  </button>
+
+  <!-- Lista Desplegable de las 13 Materias -->
+  <div id="accordion-content" class="hidden mt-2 bg-slate-950 border border-slate-800 rounded-xl p-2 space-y-1 max-h-56 overflow-y-auto">
+    
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Artes Plásticas">
+      <span>Artes Plásticas</span>
+      <i data-lucide="palette" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Biología">
+      <span>Biología</span>
+      <i data-lucide="dna" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Ciencias Sociales">
+      <span>Ciencias Sociales</span>
+      <i data-lucide="globe" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Computación">
+      <span>Computación</span>
+      <i data-lucide="monitor" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Cosmovisiones y Filosofía">
+      <span>Cosmovisiones y Filosofía</span>
+      <i data-lucide="brain" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Educación Física">
+      <span>Educación Física</span>
+      <i data-lucide="activity" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Educación Musical">
+      <span>Educación Musical</span>
+      <i data-lucide="music" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Física">
+      <span>Física</span>
+      <i data-lucide="atom" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Inglés">
+      <span>Inglés</span>
+      <i data-lucide="languages" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Lenguaje y Comunicación">
+      <span>Lenguaje y Comunicación</span>
+      <i data-lucide="book-open" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Matemática">
+      <span>Matemática</span>
+      <i data-lucide="calculator" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Química">
+      <span>Química</span>
+      <i data-lucide="flask-conical" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+    <button type="button" class="subject-option w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:bg-indigo-600/20 hover:text-indigo-400 transition-all flex items-center justify-between" data-subject="Religión y Valores">
+      <span>Religión y Valores</span>
+      <i data-lucide="heart" class="w-3.5 h-3.5 opacity-60"></i>
+    </button>
+
+  </div>
+</div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Detalle de la Tarea</label>
+          <textarea id="description" required rows="3" placeholder="Indica exactamente qué hay que entregar o revisar..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Prioridad</label>
+            <select id="priority" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+              <option value="baja">Baja</option>
+              <option value="media" selected>Media</option>
+              <option value="alta">Alta ⚠️</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Fecha de Revisión</label>
+            <input type="date" id="due-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Tu Nombre</label>
+          <input type="text" id="author" required placeholder="Ej. Alex" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-indigo-600/30 transition-all text-xs mt-2 active:scale-95">
+          Publicar para el Curso
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Vinculación del Javascript -->
+  <script src="script.js"></script>
+</body>
+</html>
