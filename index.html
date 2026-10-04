@@ -6,7 +6,9 @@
   <title>Agenda 6to A</title>
 
   <!-- Favicon y Tailwind CDN -->
+  <link rel="icon" type="image/png" href="./Logo agenda-Photoroom.png">
   <link rel="icon" type="image/png" sizes="32x32" href="Logo agenda-Photoroom.png">
+  <link rel="manifest" href="manifest.json">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="style.css">
@@ -166,5 +168,10 @@
 
 <!-- Tu script principal después -->
 <script type="module" src="script.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
 </body>
 </html>
