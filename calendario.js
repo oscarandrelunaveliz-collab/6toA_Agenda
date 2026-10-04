@@ -1,7 +1,7 @@
+import { db } from "./script.js"; // o donde tengas inicializado db
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 lucide.createIcons();
 
-// Cargar tareas sincronizadas desde localStorage
-let tasks = JSON.parse(localStorage.getItem('curso_tareas')) || [];
 
 let currentDate = new Date();
 let selectedDateStr = new Date().toISOString().split('T')[0];
@@ -24,11 +24,21 @@ nextBtn.addEventListener('click', () => {
   currentDate.setMonth(currentDate.getMonth() + 1);
   renderCalendar();
 });
+// Variable global para almacenar las tareas
+let tasks = [];
 
+// Escuchar tareas en tiempo real desde Firebase
+onValue(ref(db, 'tareas'), (snapshot) => {
+  const data = snapshot.val();
+  tasks = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+  renderCalendar(); // Vuelve a dibujar el calendario cuando cambian los datos
+});
+
+// Renderizar Cuadrícula del Calendario
 // Renderizar Cuadrícula del Calendario
 function renderCalendar() {
   calendarGrid.innerHTML = '';
-  
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -61,7 +71,7 @@ function renderCalendar() {
     if (fullDateStr === todayStr) dayCell.classList.add('today');
     if (fullDateStr === selectedDateStr) dayCell.classList.add('selected');
 
-    // Verificar si el día tiene tareas pendientes o registradas
+    // Verificar si el día tiene tareas
     const hasTasksOnDay = tasks.some(t => t.dueDate === fullDateStr);
     if (hasTasksOnDay) dayCell.classList.add('has-tasks');
 

@@ -15,7 +15,7 @@ const firebaseConfig = {
 
 // Inicializar la conexión con la base de datos
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+export const db = getDatabase(app);
 lucide.createIcons();
 
 // Lista oficial del curso
