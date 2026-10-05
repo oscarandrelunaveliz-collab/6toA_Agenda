@@ -267,18 +267,22 @@ push(tareasRef, newTask)
   });
   localStorage.setItem('curso_tareas', JSON.stringify(tasks));
 
-  e.target.reset();
-  modal.classList.add('hidden');
-  // Lanzar notificación al publicar tarea
+e.target.reset();
+    modal.classList.add('hidden');
+
+    // Lanzar notificación compatible con Android (Service Worker)
     if ('Notification' in window && Notification.permission === 'granted') {
       navigator.serviceWorker.ready.then((reg) => {
         reg.showNotification('Nueva tarea agregada', {
           body: 'Se subió una nueva tarea a la agenda escolar.',
-          icon: './Logo agenda-Photoroom.png'
+          icon: './Logo agenda-Photoroom.png',
+          badge: './Logo agenda-Photoroom.png',
+          vibrate: [200, 100, 200]
         });
       });
     }
-  renderTasks();
+
+    renderTasks();
 });
 
 // Inicialización

@@ -3,17 +3,18 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Permite que la app funcione normalmente
+  // Permite navegación normal
 });
 
-// AGREGAR ESTO PARA LAS NOTIFICACIONES:
+// EVENTO PUSH PARA ANDROID Y NAVEGADORES MÓVILES
 self.addEventListener('push', (e) => {
   const data = e.data ? e.data.json() : {};
   const title = data.title || 'Nueva Tarea - 6to A';
   const options = {
     body: data.body || 'Se ha publicado una nueva tarea en la agenda.',
-    icon: './Logo agenda-Photoroom.png', // Usamos tu ícono que está en la carpeta raíz
-    badge: './Logo agenda-Photoroom.png'
+    icon: './Logo agenda-Photoroom.png',
+    badge: './Logo agenda-Photoroom.png',
+    vibrate: [200, 100, 200]
   };
 
   e.waitUntil(self.registration.showNotification(title, options));
