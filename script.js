@@ -17,6 +17,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 lucide.createIcons();
+// Pedir permiso al usuario para enviar notificaciones
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
 
 // Lista oficial del curso
 const studentsList = [
@@ -262,6 +266,15 @@ push(tareasRef, newTask)
 
   e.target.reset();
   modal.classList.add('hidden');
+  // Lanzar notificación al publicar tarea
+    if ('Notification' in window && Notification.permission === 'granted') {
+      navigator.serviceWorker.ready.then((reg) => {
+        reg.showNotification('Nueva tarea agregada', {
+          body: 'Se subió una nueva tarea a la agenda escolar.',
+          icon: './Logo agenda-Photoroom.png'
+        });
+      });
+    }
   renderTasks();
 });
 
