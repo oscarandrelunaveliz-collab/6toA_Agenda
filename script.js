@@ -12,15 +12,18 @@ const firebaseConfig = {
   messagingSenderId: "508072085664",
   appId: "1:508072085664:web:a36d82cc47ac5534d4a1c6"
 };
+// Registrar el Service Worker y pedir permisos
+if ('serviceWorker' in navigator && 'Notification' in window) {
+  navigator.serviceWorker.register('./sw.js');
 
+  if (Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
 // Inicializar la conexión con la base de datos
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 lucide.createIcons();
-// Pedir permiso al usuario para enviar notificaciones
-if ('Notification' in window && Notification.permission === 'default') {
-  Notification.requestPermission();
-}
 
 // Lista oficial del curso
 const studentsList = [
