@@ -305,7 +305,7 @@ onValue(tareasRef, (snapshot) => {
   
   // Detectar filtro activo
   const activeBtn = document.querySelector('.filter-btn.active');
-  const currentFilter = activeBtn ? activeBtn.dataset.filter : 'todas';
+  const currentFilter = activeBtn ? activeBtn.dataset.filter : 'pendientes';
   
   // Volver a dibujar la lista en pantalla
   renderTasks(currentFilter, searchInput ? searchInput.value : '');
