@@ -332,3 +332,21 @@ document.addEventListener('click', (e) => {
     deleteTask(taskId);
   }
 });
+// Lógica para abrir/cerrar el menú desplegable de 3 rayitas
+const menuBtn = document.getElementById('menu-btn');
+const dropdownMenu = document.getElementById('dropdown-menu');
+
+if (menuBtn && dropdownMenu) {
+  // Mostrar u ocultar al hacer clic en el botón
+  menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdownMenu.classList.toggle('hidden');
+  });
+
+  // Cerrar el menú si se hace clic fuera de él
+  document.addEventListener('click', (e) => {
+    if (!dropdownMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+      dropdownMenu.classList.add('hidden');
+    }
+  });
+}

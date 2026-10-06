@@ -28,6 +28,11 @@
         <i data-lucide="plus-circle" class="w-4 h-4"></i>
         <span>Anotar</span>
       </button>
+      <!-- Botón para Pedir Tareas -->
+<button id="open-requests-modal" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700/80 p-2 sm:px-2.5 sm:py-2 rounded-xl transition-all flex items-center gap-1.5 shrink-0" title="Pedir Tarea">
+  <i data-lucide="help-circle" class="w-4 h-4"></i>
+  <span class="hidden xs:inline text-xs font-medium">¿Hay tarea?</span>
+</button>
     </div>
   </header>
 
@@ -108,5 +113,45 @@
   </div>
 
   <script src="kardex.js"></script>
+  <!-- Modal de Pedir / Preguntar Tareas -->
+<div id="requests-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-5 shadow-2xl flex flex-col max-h-[85vh]">
+    
+    <!-- Encabezado Modal -->
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+      <div class="flex items-center gap-2">
+        <i data-lucide="help-circle" class="w-5 h-5 text-amber-400"></i>
+        <h2 class="text-base font-bold text-white">Consultas de Tareas</h2>
+      </div>
+      <button id="close-requests-modal" class="text-slate-400 hover:text-white transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Formulario para publicar una pregunta -->
+    <form id="request-form" class="flex gap-2 mb-4">
+      <select id="request-materia" class="bg-slate-800 border border-slate-700 text-white text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400" required>
+        <option value="" disabled selected>Materia...</option>
+        <option value="MATEMÁTICAS">Matemáticas</option>
+        <option value="LENGUAJE">Lenguaje</option>
+        <option value="QUÍMICA">Química</option>
+        <option value="FÍSICA">Física</option>
+        <option value="BIOLOGÍA">Biología</option>
+        <option value="HISTORIA">Historia</option>
+        <option value="INGLÉS">Inglés</option>
+      </select>
+      <input type="text" id="request-text" placeholder="Ej: ¿Dijo algo de la pág 45?" class="flex-1 bg-slate-800 border border-slate-700 text-white text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-amber-400" required />
+      <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-3 py-2 rounded-xl text-xs transition-colors shrink-0">
+        Preguntar
+      </button>
+    </form>
+
+    <!-- Lista de Preguntas / Respuestas -->
+    <div id="requests-list" class="space-y-3 overflow-y-auto flex-1 pr-1">
+      <!-- Se renderizan dinámicamente -->
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
