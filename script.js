@@ -293,7 +293,15 @@ onValue(tareasRef, (snapshot) => {
   const data = snapshot.val();
   
   // Si existen tareas en la nube, las convertimos en arreglo; si no, queda vacío
+  // Convertimos las tareas a arreglo y las ordenamos por fecha de entrega
   tasks = data ? Object.keys(data).map(key => ({ ...data[key], id: key })) : [];
+
+  // Ordenar: las fechas más próximas a vencer arriba
+  tasks.sort((a, b) => {
+    if (!a.dueDate) return 1;
+    if (!b.dueDate) return -1;
+    return new Date(a.dueDate) - new Date(b.dueDate);
+  });
   
   // Detectar filtro activo
   const activeBtn = document.querySelector('.filter-btn.active');
