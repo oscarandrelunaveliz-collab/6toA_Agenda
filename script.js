@@ -25,6 +25,7 @@ const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 lucide.createIcons();
 
+
 // Lista oficial del curso
 const studentsList = [
   "ADUVIRI MAMANI CRISTHOFER",
@@ -358,3 +359,28 @@ if (menuBtn && dropdownMenu) {
     }
   });
 }
+// Detectar cambios en la conexión a internet
+function updateOnlineStatus() {
+  const submitBtn = document.querySelector('#task-form button[type="submit"]');
+  
+  if (!navigator.onLine) {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Sin conexión (Solo lectura)';
+      submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+  } else {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerText = 'Publicar Tarea';
+      submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+  }
+}
+
+// Escuchar eventos de red
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// Ejecutar al cargar
+updateOnlineStatus();
