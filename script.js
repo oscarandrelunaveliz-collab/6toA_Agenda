@@ -1,6 +1,8 @@
 // Importar los módulos de Firebase
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
 
 // Tus credenciales reales de Firebase
 const firebaseConfig = {
@@ -23,6 +25,41 @@ if ('serviceWorker' in navigator && 'Notification' in window) {
 // Inicializar la conexión con la base de datos
 const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
+// Inicializar Firebase Messaging
+const messaging = getMessaging(app);
+
+// Solicitar permiso e inscribir el dispositivo
+async function activarNotificaciones() {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      const currentToken = await getToken(messaging, { 
+        vapidKey: 'BB3g5dcY364DUDLIFeGHtKK7mzH7n1LhvgJWepT0FMWjqtbFhXDH6aDkArN7md0Uasr3FKI7-YiecaKNnxXVBp0' 
+      });
+
+      if (currentToken) {
+        // Guardar el token en Realtime Database para este dispositivo
+        const tokenRef = ref(db, 'fcmTokens/' + currentToken);
+        set(tokenRef, true);
+        console.log('Token de notificación registrado correctamente');
+      }
+    }
+  } catch (error) {
+    console.error('Error al registrar notificaciones:', error);
+  }
+}
+
+// Ejecutar el registro de notificaciones al cargar
+activarNotificaciones();
+// Escuchar mensajes entrantes cuando la app está abierta o en segundo plano
+onMessage(messaging, (payload) => {
+  if (Notification.permission === 'granted') {
+    new Notification(payload.notification?.title || 'Nueva Tarea - 6to A', {
+      body: payload.notification?.body || 'Se ha publicado una nueva tarea en la agenda.',
+      icon: './Logo agenda-Photoroom.png'
+    });
+  }
+});
 lucide.createIcons();
 
 
@@ -291,6 +328,7 @@ initUserSelector();
 // Escuchar cambios de tareas en Firebase en tiempo real
 const tareasRef = ref(db, 'tareas');
 onValue(tareasRef, (snapshot) => {
+  
   const data = snapshot.val();
   
   // Si existen tareas en la nube, las convertimos en arreglo; si no, queda vacío
